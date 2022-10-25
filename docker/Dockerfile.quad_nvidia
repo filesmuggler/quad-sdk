@@ -1,0 +1,46 @@
+# base image
+FROM nvidia_ros:latest
+
+# Path to HSL library in zip file; ma97 only tested
+ARG HSL_LIB_PATH=${HSL_LIB_PATH}
+
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV DEBIAN_FRONTEND noninteractive
+ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+ 
+# Change the default shell to Bash
+SHELL [ "/bin/bash" , "-c" ]
+
+RUN apt update && apt install gfortran metis libmetis-dev python3-rosinstall -y
+ 
+# Create workspace
+RUN source /opt/ros/noetic/setup.bash 
+ 
+# Copy HSL library from disk
+COPY ${HSL_LIB_PATH} ./libraries/hsl.zip
+RUN basename ${HSL_LIB_PATH} >> ./hsl_filename
+#ENV hsl_filename=$(basename ${HSL_LIB_PATH})
+RUN echo $(cat ./hsl_filename)
+
+# Install HSL library
+RUN unzip ./libraries/hsl.zip -d ./libraries/
+RUN export HSL_FILENAME=$(cat ./hsl_filename) && \
+    cd ./libraries/${HSL_FILENAME::-4} && \
+    ./configure && make
+
+
+RUN mkdir -p ./catkin_ws/src && rosws init ./catkin_ws /opt/ros/noetic && source ./catkin_ws/setup.bash
+
+# Clone repository and setup
+RUN export HSL_FILENAME=$(cat ./hsl_filename) && cd ./catkin_ws/src/ && git clone -b noetic_docker https://github.com/filesmuggler/quad-sdk.git && cd quad-sdk && \
+    cp -r /libraries/${HSL_FILENAME::-4}/ ./external/ipopt/coinhsl && chmod +x setup.sh && ./setup.sh
+
+# Install RBDL library
+RUN apt install git-core cmake libeigen3-dev build-essential cmake-curses-gui -y
+RUN git clone --recursive https://github.com/rbdl/rbdl && cd ./rbdl && mkdir rbdl-build && cd rbdl-build && cmake -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ../ && make install
+
+RUN source ./catkin_ws/setup.bash && cd ./catkin_ws && catkin build
+
+RUN useradd -m user && yes password | passwd user
