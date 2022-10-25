@@ -34,7 +34,7 @@ RUN export HSL_FILENAME=$(cat ./hsl_filename) && \
 RUN mkdir -p ./catkin_ws/src && rosws init ./catkin_ws /opt/ros/noetic && source ./catkin_ws/setup.bash
 
 # Clone repository and setup
-RUN export HSL_FILENAME=$(cat ./hsl_filename) && cd ./catkin_ws/src/ && git clone -b noetic_docker https://github.com/filesmuggler/quad-sdk.git && cd quad-sdk && \
+RUN export HSL_FILENAME=$(cat ./hsl_filename) && cd ./catkin_ws/src/ && git clone -b noetic-docker https://github.com/filesmuggler/quad-sdk.git && cd quad-sdk && \
     cp -r /libraries/${HSL_FILENAME::-4}/ ./external/ipopt/coinhsl && chmod +x setup.sh && ./setup.sh
 
 # Install RBDL library
