@@ -13,7 +13,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPA
 # Change the default shell to Bash
 SHELL [ "/bin/bash" , "-c" ]
 
-RUN apt update && apt install gfortran metis libmetis-dev python3-rosinstall -y
+RUN apt update && apt install gfortran metis libmetis-dev python3-rosinstall libeigen3-dev -y
  
 # Create workspace
 RUN source /opt/ros/noetic/setup.bash 
