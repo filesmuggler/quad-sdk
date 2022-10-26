@@ -28,10 +28,10 @@ find_package(Eigen3 REQUIRED)
 # find_package(OsqpEigen REQUIRED)
 find_package(PythonLibs 2.7)
 
-set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
-set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
-set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
-find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
+#set(QPOASES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../external/qpOASES")
+#set(QPOASES_INCLUDE_DIRS "${QPOASES_DIR}/include")
+#set(QPOASES_LIBRARIES "${QPOASES_DIR}/build/libs")
+#find_library(QPOASES NAMES qpOASES PATHS ${QPOASES_LIBRARIES} REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
