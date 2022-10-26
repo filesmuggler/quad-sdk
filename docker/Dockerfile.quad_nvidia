@@ -3,6 +3,7 @@ FROM nvidia_ros:latest
 
 # Path to HSL library in zip file; ma97 only tested
 ARG HSL_LIB_PATH=${HSL_LIB_PATH}
+ARG RBDL_SUB="./subs/rbdl_eigenmath.h"
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -40,6 +41,8 @@ RUN export HSL_FILENAME=$(cat ./hsl_filename) && cd ./catkin_ws/src/ && git clon
 # Install RBDL library
 RUN apt install git-core cmake libeigen3-dev build-essential cmake-curses-gui -y
 RUN git clone --recursive https://github.com/rbdl/rbdl && cd ./rbdl && mkdir rbdl-build && cd rbdl-build && cmake -D CMAKE_BUILD_TYPE=Release -D RBDL_BUILD_ADDON_URDFREADER=ON ../ && make install
+COPY ${RBDL_SUB} rbdl_eigenmath.h
+RUN mv rbdl_eigenmath.h /usr/local/include/rbdl/rbdl_eigenmath.h
 
 RUN source ./catkin_ws/setup.bash && cd ./catkin_ws && catkin build
 
